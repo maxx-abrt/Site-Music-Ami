@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Play, 
   Headphones, 
@@ -18,7 +18,10 @@ import {
   Info,
   Heart,
   Sparkles,
-  Share2
+  Share2,
+  AlertTriangle,
+  ChevronDown,
+  HelpCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLatestEpisodes, useTrendingPodcasts } from '../hooks/usePodcastData';
@@ -29,13 +32,43 @@ import { subscribeToNewsletter } from '../services/newsletterService';
 const FALLBACK_IMAGE = '/images/podcast-placeholder.jpg';
 
 const Home = () => {
-  const { latestEpisodes, isLoading: isLoadingEpisodes } = useLatestEpisodes(2);
+  const { latestEpisodes, isLoading: isLoadingEpisodes, error: episodesError } = useLatestEpisodes(3);
   const { data: trendingPodcasts, isLoading: isLoadingTrending } = useTrendingPodcasts(3);
   const [email, setEmail] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [playingHomeEpisode, setPlayingHomeEpisode] = useState<number | null>(null);
+  const [expandedHomeEpisode, setExpandedHomeEpisode] = useState<string | null>(null);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(0); // Premier élément ouvert par défaut
+
+  // Données FAQ
+  const faqItems = [
+    {
+      question: "Quelle est la fréquence de publication des épisodes ?",
+      answer: "Nous publions un nouvel épisode chaque mois, généralement le premier lundi. Nous proposons parfois des épisodes bonus sur des sujets spéciaux ou des interviews exclusives."
+    },
+    {
+      question: "Comment puis-je participer au podcast ?",
+      answer: "Si vous êtes musicien ou professionnel de l'industrie musicale et souhaitez partager votre expérience, contactez-nous via notre formulaire de contact. Nous sommes toujours à la recherche de nouvelles histoires inspirantes !"
+    },
+    {
+      question: "Où puis-je écouter vos épisodes ?",
+      answer: "Tous nos épisodes sont disponibles directement sur ce site, mais aussi sur YouTube, Spotify, Apple Podcasts, Google Podcasts et toutes les principales plateformes de podcast."
+    },
+    {
+      question: "Proposez-vous des transcriptions de vos épisodes ?",
+      answer: "Oui, nous fournissons des transcriptions complètes pour chaque épisode, accessibles depuis la page de l'épisode. Cela permet à tous nos auditeurs de profiter du contenu, y compris ceux qui préfèrent lire ou qui ont des difficultés auditives."
+    },
+    {
+      question: "Comment puis-je soutenir le podcast ?",
+      answer: "Vous pouvez nous soutenir de plusieurs façons : en vous abonnant à notre newsletter, en partageant nos épisodes sur les réseaux sociaux, en laissant des commentaires et des évaluations sur les plateformes d'écoute, ou en contribuant financièrement via notre page de soutien."
+    }
+  ];
+
+  // Fonction pour basculer l'état d'expansion d'un élément FAQ
+  const toggleFaq = (index: number) => {
+    setExpandedFaq(expandedFaq === index ? null : index);
+  };
 
   // Témoignages fictifs
   const testimonials = [
@@ -99,6 +132,11 @@ const Home = () => {
     }
   };
 
+  // Fonction pour gérer l'expansion des cartes
+  const toggleExpandHome = (id: string) => {
+    setExpandedHomeEpisode(prev => prev === id ? null : id);
+  };
+
   // Add the missing newsletter section implementation
   const NewsletterSection = () => (
     <div className="text-center">
@@ -159,8 +197,7 @@ const Home = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-5xl md:text-7xl font-bold text-white mb-8 leading-tight"
           >
-            Découvrez la Musique<br />
-            <span className="text-blue-200">Comme Jamais Auparavant</span>
+            MUSICAMI
           </motion.h1>
           
           <motion.p
@@ -169,8 +206,7 @@ const Home = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-xl md:text-2xl text-blue-100 mb-12 max-w-3xl mx-auto"
           >
-            Plongez dans l'univers fascinant de la musique avec des analyses approfondies, 
-            des interviews exclusives et des découvertes musicales uniques.
+            LE podcast mensuel où des musiciens nous racontent à quel point la musique change leur quotidien 🎶 
           </motion.p>
           
           <motion.div
@@ -193,7 +229,7 @@ const Home = () => {
               className="inline-flex items-center px-8 py-4 text-lg font-medium rounded-full border-2 border-white text-white hover:bg-white/10 transition-all duration-300"
             >
               <Info className="mr-2 h-5 w-5" />
-              En savoir plus
+              Nous découvrir
             </Link>
           </motion.div>
         </motion.div>
@@ -209,89 +245,66 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Stats Section - Nouveau */}
+      
+
+      {/* Latest Episodes Section */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {podcastStats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="text-center p-6 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors duration-300"
-              >
-                <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-blue-100">
-                  {stat.icon}
-                </div>
-                <h3 className="text-3xl font-bold text-blue-600 mb-2">{stat.value}</h3>
-                <p className="text-gray-600">{stat.label}</p>
-              </motion.div>
-            ))}
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">Derniers épisodes</h2>
+            <Link to="/episodes" className="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+              Voir tous les épisodes
+              <ArrowRight className="ml-1 h-4 w-4" />
+            </Link>
           </div>
+          
+          {isLoadingEpisodes ? (
+            <div className="flex justify-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+            </div>
+          ) : episodesError ? (
+            <div className="text-center py-12">
+              <AlertTriangle className="h-12 w-12 text-red-600 mx-auto mb-4" />
+              <p className="text-gray-600">Une erreur est survenue lors du chargement des vidéos.</p>
+            </div>
+          ) : latestEpisodes.length === 0 ? (
+            <div className="text-center py-12">
+              <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+              <p className="text-gray-600">Aucun épisode n'a été trouvé.</p>
+            </div>
+          ) : (
+            <AnimatePresence>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {latestEpisodes.map(episode => (
+                  <motion.div
+                    key={episode.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{ duration: 0.3 }}
+                    className="h-full"
+                  >
+                    <Link to={`/video/${episode.id}`} className="block h-full">
+                      <EpisodeCard
+                        video={episode}
+                        isExpanded={expandedHomeEpisode === episode.id}
+                        onToggleExpand={() => toggleExpandHome(episode.id)}
+                        variant="grid"
+                        className="h-full transform hover:shadow-xl transition-all duration-300"
+                        onImageError={(e) => {
+                          e.currentTarget.src = FALLBACK_IMAGE;
+                        }}
+                      />
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            </AnimatePresence>
+          )}
         </div>
       </section>
 
-      {/* Latest Episodes - Amélioré */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-4xl font-bold text-gray-900 mb-4"
-            >
-              Derniers Épisodes
-            </motion.h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Découvrez nos dernières productions et plongez dans des discussions passionnantes 
-              sur l'univers musical.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {isLoadingEpisodes ? (
-              // Ajout d'un skeleton loader élégant
-              Array(3).fill(null).map((_, index) => (
-                <div key={index} className="bg-white rounded-xl p-4 animate-pulse">
-                  <div className="w-full h-48 bg-gray-200 rounded-lg mb-4"></div>
-                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                </div>
-              ))
-            ) : (
-              latestEpisodes.map(episode => (
-                <motion.div
-                  key={episode.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  whileHover={{ scale: 1.03 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <EpisodeCard
-                    episode={{
-                      ...episode,
-                      episodeImage: episode.artwork || episode.episodeImage,
-                      podcastImage: episode.podcastImage || FALLBACK_IMAGE
-                    }}
-                    isPlaying={playingHomeEpisode === episode.id}
-                    onTogglePlay={() => setPlayingHomeEpisode(
-                      playingHomeEpisode === episode.id ? null : episode.id
-                    )}
-                    variant="grid"
-                    className="h-full transform hover:shadow-xl transition-all duration-300"
-                    onImageError={(e) => {
-                      e.currentTarget.src = FALLBACK_IMAGE;
-                    }}
-                  />
-                </motion.div>
-              ))
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials - Complètement revu */}
+      {/* Testimonials Section - Complètement revu */}
       <section className="py-20 bg-gradient-to-br from-blue-900 to-blue-700 text-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -332,6 +345,79 @@ const Home = () => {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Section FAQ - Nouvelle section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-12"
+          >
+            <HelpCircle className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Questions fréquentes</h2>
+            <p className="text-xl text-gray-600">
+              Tout ce que vous devez savoir sur notre podcast
+            </p>
+          </motion.div>
+
+          <div className="space-y-4">
+            {faqItems.map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="bg-white rounded-xl shadow-sm overflow-hidden"
+              >
+                <button
+                  onClick={() => toggleFaq(index)}
+                  className="w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none"
+                >
+                  <span className="text-lg font-medium text-gray-900">{item.question}</span>
+                  <ChevronDown 
+                    className={`h-5 w-5 text-blue-600 transition-transform duration-300 ${
+                      expandedFaq === index ? 'transform rotate-180' : ''
+                    }`} 
+                  />
+                </button>
+                
+                <AnimatePresence>
+                  {expandedFaq === index && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 pb-4 text-gray-600 border-t border-gray-100 pt-2">
+                        {item.answer}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
+            className="mt-10 text-center"
+          >
+            <Link 
+              to="/contact" 
+              className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Vous avez d'autres questions ? Contactez-nous
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </motion.div>
         </div>
       </section>
 

@@ -6,6 +6,10 @@ const API_KEY = 'MRYZFQ8VUCTH68HZBF6X';
 const API_SECRET = 'qyCVd5v$Pz3Z^5bWHWq#ytMkNcn6$K8hpSK5ywb8';
 const BASE_URL = 'https://api.podcastindex.org/api/1.0';
 
+// Configuration de l'API YouTube
+const YOUTUBE_API_KEY = 'AIzaSyDEoB1csom4eZHGETpMkDSyzgoIsG0rx6U';
+const CHANNEL_ID = 'UCNZWO9kWm76mntaa8s7rJkQ'; // Replace with the actual channel ID
+
 // Interface pour les podcasts
 export interface Podcast {
   id: number;
@@ -30,6 +34,19 @@ export interface PodcastEpisode {
   episodeImage: string; // Image spécifique à l'épisode
   podcastImage: string; // Image du podcast parent
   categories?: string[];
+}
+
+// Interface pour les vidéos YouTube
+export interface YouTubeVideo {
+  id: string;
+  title: string;
+  description: string;
+  publishedAt: string;
+  thumbnailUrl: string;
+  videoUrl: string;
+  duration: string;
+  author: string;
+  viewCount?: string;
 }
 
 /**
@@ -219,4 +236,83 @@ const getMockEpisodes = (): PodcastEpisode[] => {
       categories: ["Cinéma", "Composition"]
     }
   ];
+};
+
+// Récupère les vidéos d'une chaîne YouTube
+export const getYouTubeVideos = async (): Promise<YouTubeVideo[]> => {
+  try {
+    // Première requête pour obtenir la liste des vidéos
+    const response = await axios.get('https://www.googleapis.com/youtube/v3/search', {
+      params: {
+        part: 'snippet',
+        channelId: CHANNEL_ID,
+        maxResults: 50,
+        type: 'video',
+        order: 'date',
+        key: YOUTUBE_API_KEY,
+      },
+    });
+
+    // Vérification si des éléments sont retournés
+    if (!response.data.items || response.data.items.length === 0) {
+      console.error('Aucune vidéo trouvée pour cette chaîne.');
+      return [];
+    }
+
+    // Extraction des ID de vidéos
+    const videoIds = response.data.items
+      .filter((item: any) => item.id && item.id.videoId)
+      .map((item: any) => item.id.videoId)
+      .join(',');
+
+    if (!videoIds) {
+      console.error('Aucun ID de vidéo valide trouvé.');
+      return [];
+    }
+
+    // Deuxième requête pour obtenir les détails des vidéos
+    const videoDetailsResponse = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
+      params: {
+        part: 'contentDetails,snippet,statistics',
+        id: videoIds,
+        key: YOUTUBE_API_KEY,
+      },
+    });
+
+    if (!videoDetailsResponse.data.items) {
+      console.error('Aucun détail de vidéo trouvé.');
+      return [];
+    }
+
+    // Filtrer pour exclure les Shorts (vidéos verticales et courtes)
+    const filteredVideos = videoDetailsResponse.data.items.filter((item: any) => {
+      // Convertir la durée ISO 8601 en secondes
+      const duration = item.contentDetails.duration;
+      const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+      const hours = parseInt(match[1] || '0');
+      const minutes = parseInt(match[2] || '0');
+      const seconds = parseInt(match[3] || '0');
+      const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+      
+      // Considérer comme Short si la durée est < 60 secondes
+      return totalSeconds >= 60;
+    });
+
+    // Transformation des données en format YouTube Video
+    return filteredVideos.map((item: any) => ({
+      id: item.id,
+      title: item.snippet.title,
+      description: item.snippet.description || '',
+      publishedAt: item.snippet.publishedAt,
+      thumbnailUrl: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url,
+      videoUrl: `https://www.youtube.com/watch?v=${item.id}`,
+      duration: item.contentDetails.duration || 'PT0S',
+      author: item.snippet.channelTitle,
+      viewCount: item.statistics?.viewCount,
+      categories: []
+    }));
+  } catch (error) {
+    console.error('Erreur lors de la récupération des vidéos YouTube:', error);
+    return [];
+  }
 }; 

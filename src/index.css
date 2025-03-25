@@ -1,3 +1,68 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Ajoutez ces règles à votre CSS global */
+.thumbnail-large img {
+  width: 100%;
+  height: auto;
+  max-height: 320px; /* Augmente la hauteur max des thumbnails */
+  object-fit: cover;
+}
+
+@media (min-width: 768px) {
+  .thumbnail-large {
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .thumbnail-large img {
+    width: 45%;
+    max-width: 480px;
+  }
+}
+
+/* Style pour l'overlay de survol sur les thumbnails */
+.thumbnail-hover-effect {
+  position: relative;
+}
+
+.thumbnail-hover-effect::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0);
+  transition: background-color 0.3s ease;
+  border-radius: 0.375rem; /* rounded-md */
+}
+
+.thumbnail-hover-effect:hover::after {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Style pour l'indicateur "Regarder la vidéo" */
+.watch-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #2563eb; /* blue-600 */
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.thumbnail-hover-effect:hover .watch-indicator {
+  opacity: 1;
+}
