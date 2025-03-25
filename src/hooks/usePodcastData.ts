@@ -9,7 +9,7 @@ export const usePodcastEpisodes = (limit?: number) => {
   const queryClient = useQueryClient();
   
   return useQuery({
-    queryKey: ['podcastEpisodes'],
+    queryKey: ['podcastEpisodes', { limit }],
     queryFn: async () => {
       try {
         const episodes = await getEpisodesByFeedUrl(PODCAST_FEED_URL);
@@ -31,12 +31,33 @@ export const usePodcastEpisodes = (limit?: number) => {
 };
 
 export const useYouTubeVideos = (limit?: number) => {
+  // Utiliser une clé de requête différente selon qu'il y a une limite ou non
   return useQuery({
-    queryKey: ['youtubeVideos'],
+    // Inclure la limite dans la clé de requête pour différencier les requêtes
+    queryKey: ['youtubeVideos', { limit }],
     queryFn: async () => {
       try {
+        // Récupérer toutes les vidéos YouTube
         const videos = await getYouTubeVideos();
-        return limit ? videos.slice(0, limit) : videos;
+        
+        // Filtrer pour exclure les shorts (généralement moins de 60 secondes ou avec #shorts dans le titre/description)
+        const filteredVideos = videos.filter(video => {
+          // Exclure les vidéos marquées comme shorts ou de durée très courte
+          const isShort = 
+            video.title?.toLowerCase().includes('#short') || 
+            video.description?.toLowerCase().includes('#short') ||
+            (video.duration && video.duration < 60); // Moins de 60 secondes
+          
+          return !isShort;
+        });
+        
+        // Trier par date de publication (du plus récent au plus ancien)
+        const sortedVideos = filteredVideos.sort((a, b) => {
+          return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+        });
+        
+        // Appliquer la limite si spécifiée
+        return limit ? sortedVideos.slice(0, limit) : sortedVideos;
       } catch (error) {
         console.error("Erreur lors de la récupération des vidéos YouTube:", error);
         throw error;
@@ -47,8 +68,8 @@ export const useYouTubeVideos = (limit?: number) => {
   });
 };
 
-export const useLatestEpisodes = (limit: number = 6) => {
-  // Remplacer par useYouTubeVideos pour assurer la cohérence
+export const useLatestEpisodes = (limit: number = 3) => {
+  // Utiliser useYouTubeVideos avec la limite spécifiée
   const { data, isLoading, error } = useYouTubeVideos(limit);
   
   return {
@@ -60,7 +81,7 @@ export const useLatestEpisodes = (limit: number = 6) => {
 
 export const useTrendingPodcasts = (limit: number = 3) => {
   return useQuery({
-    queryKey: ['trendingPodcasts'],
+    queryKey: ['trendingPodcasts', { limit }],
     queryFn: async () => {
       try {
         const podcasts = await getTrendingPodcasts();

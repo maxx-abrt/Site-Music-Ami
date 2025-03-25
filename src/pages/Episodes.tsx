@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import EpisodeCard from '../components/EpisodeCard';
 import { useYouTubeVideos } from '../hooks/usePodcastData';
 import { Link } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Episodes = () => {
   const [expandedEpisode, setExpandedEpisode] = useState<string | null>(null);
@@ -11,8 +12,25 @@ const Episodes = () => {
   const [filter, setFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
-  const { data: videos, isLoading, error } = useYouTubeVideos();
+  const queryClient = useQueryClient();
+  
+  // Récupérer toutes les vidéos sans limite
+  const { data: videos, isLoading, error, refetch } = useYouTubeVideos();
+  
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      // Invalider le cache pour forcer un rechargement complet
+      await queryClient.invalidateQueries({ queryKey: ['youtubeVideos'] });
+      await refetch();
+    } catch (error) {
+      console.error("Erreur lors du rafraîchissement:", error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
   
   const toggleExpand = (id: string) => {
     setExpandedEpisode(expandedEpisode === id ? null : id);
@@ -29,7 +47,7 @@ const Episodes = () => {
     const categories = new Set<string>();
     videos.forEach(video => {
       if (video.categories) {
-        Object.values(video.categories).forEach(category => {
+        video.categories.forEach(category => {
           categories.add(category);
         });
       }
@@ -47,6 +65,14 @@ const Episodes = () => {
       return matchesFilter && matchesCategory;
     });
   }, [videos, filter, categoryFilter]);
+  
+  // Effet pour forcer un rafraîchissement au montage du composant
+  React.useEffect(() => {
+    // Vérifier si nous avons moins de 4 vidéos (ce qui suggère que nous avons les données limitées)
+    if (videos && videos.length <= 3) {
+      handleRefresh();
+    }
+  }, []);
   
   return (
     <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-20">
@@ -77,15 +103,24 @@ const Episodes = () => {
 
         <div className="flex gap-4">
           <button
+            onClick={handleRefresh}
+            disabled={isLoading || isRefreshing}
+            className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Rafraîchir les épisodes"
+          >
+            <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+          </button>
+          <button
             onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
             className="p-2 rounded-lg hover:bg-gray-100"
+            title={viewMode === 'grid' ? 'Vue liste' : 'Vue grille'}
           >
             {viewMode === 'grid' ? <List className="h-5 w-5" /> : <Grid className="h-5 w-5" />}
           </button>
         </div>
       </div>
 
-      {isLoading ? (
+      {isLoading || isRefreshing ? (
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
         </div>
@@ -93,6 +128,11 @@ const Episodes = () => {
         <div className="text-center py-12">
           <AlertTriangle className="h-12 w-12 text-red-600 mx-auto mb-4" />
           <p className="text-gray-600">Une erreur est survenue lors du chargement des vidéos.</p>
+        </div>
+      ) : filteredEpisodes.length === 0 ? (
+        <div className="text-center py-12">
+          <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+          <p className="text-gray-600">Aucun épisode ne correspond à votre recherche.</p>
         </div>
       ) : (
         <AnimatePresence>
