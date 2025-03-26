@@ -5,14 +5,26 @@ import { ArrowLeft, Calendar, User, Eye } from 'lucide-react';
 
 const VideoDetail = () => {
   const { videoId } = useParams<{ videoId: string }>();
-  const { data: videos } = useYouTubeVideos();
-  const video = videos?.find(v => v.id === videoId);
+  const { data: video, isLoading, error } = useYouTubeVideo(videoId);
 
-  if (!video) {
+  if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mx-auto mb-6"></div>
         <p>Chargement de la vidéo...</p>
+      </div>
+    );
+  }
+
+  if (error || !video) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-16 text-center">
+        <h2 className="text-2xl font-bold mb-4">Vidéo non trouvée</h2>
+        <p className="mb-8">La vidéo que vous recherchez n'existe pas ou n'est plus disponible.</p>
+        <Link to="/episodes" className="inline-flex items-center text-blue-600 hover:text-blue-800">
+          <ArrowLeft className="mr-2 h-5 w-5" />
+          Retour aux épisodes
+        </Link>
       </div>
     );
   }

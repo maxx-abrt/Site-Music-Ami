@@ -149,7 +149,7 @@ export const fetchEpisodes = async (feedUrl: string): Promise<Episode[]> => {
             const itunesAuthor = item['itunes:author'] || 
                                 (item.itunes && item.itunes.author) || 
                                 channel.author || 
-                                'MusicAmi';
+                                'Musicami';
             
             const itunesSeason = item['itunes:season'] || 
                                 (item.itunes && item.itunes.season) || 

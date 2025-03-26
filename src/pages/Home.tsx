@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Play, 
@@ -21,12 +21,17 @@ import {
   Share2,
   AlertTriangle,
   ChevronDown,
-  HelpCircle
+  HelpCircle,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLatestEpisodes, useTrendingPodcasts } from '../hooks/usePodcastData';
 import EpisodeCard from '../components/EpisodeCard';
 import { subscribeToNewsletter } from '../services/newsletterService';
+import Particles from "react-tsparticles";
+import { loadSlim } from "tsparticles-slim";
+import { Engine } from "tsparticles-engine";
 
 // Add fallback image constant at the top
 const FALLBACK_IMAGE = '/images/podcast-placeholder.jpg';
@@ -41,27 +46,32 @@ const Home = () => {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(0); // Premier élément ouvert par défaut
 
+  // Particules initialization
+  const particlesInit = useCallback(async (engine: Engine) => {
+    await loadSlim(engine);
+  }, []);
+
   // Données FAQ
   const faqItems = [
     {
       question: "Quelle est la fréquence de publication des épisodes ?",
-      answer: "Nous publions un nouvel épisode chaque mois, généralement le premier lundi. Nous proposons parfois des épisodes bonus sur des sujets spéciaux ou des interviews exclusives."
+      answer: "Nous publions un nouvel épisode le premier jour de chaque mois."
     },
     {
       question: "Comment puis-je participer au podcast ?",
-      answer: "Si vous êtes musicien ou professionnel de l'industrie musicale et souhaitez partager votre expérience, contactez-nous via notre formulaire de contact. Nous sommes toujours à la recherche de nouvelles histoires inspirantes !"
+      answer: "Si vous êtes musicien et souhaitez partager votre expérience, n'hésitez pas à nous contacter via notre formulaire de contact. Nous sommes toujours à la recherche d'artistes inspirants!"
     },
     {
-      question: "Où puis-je écouter vos épisodes ?",
-      answer: "Tous nos épisodes sont disponibles directement sur ce site, mais aussi sur YouTube, Spotify, Apple Podcasts, Google Podcasts et toutes les principales plateformes de podcast."
+      question: "Est-ce que je peux proposer des invités pour Musicami ?",
+      answer: "Bien sûr ! Si vous souhaitez voir un artiste qui n'a pas encore été invité sur Musicami, n'hésitez pas à nous le faire savoir via notre formulaire de contact. Nous sommes toujours à la recherche de suggestions pertinentes et nous apprécions votre participation!"
     },
     {
-      question: "Proposez-vous des transcriptions de vos épisodes ?",
-      answer: "Oui, nous fournissons des transcriptions complètes pour chaque épisode, accessibles depuis la page de l'épisode. Cela permet à tous nos auditeurs de profiter du contenu, y compris ceux qui préfèrent lire ou qui ont des difficultés auditives."
+      question: "Où puis-je écouter Musicami ?",
+      answer: "Tous nos épisodes sont dispos sur notre site internet et sur Youtube ainsi que sur les plateformes de podcasts: Spotify et Apple Podcast."
     },
     {
-      question: "Comment puis-je soutenir le podcast ?",
-      answer: "Vous pouvez nous soutenir de plusieurs façons : en vous abonnant à notre newsletter, en partageant nos épisodes sur les réseaux sociaux, en laissant des commentaires et des évaluations sur les plateformes d'écoute, ou en contribuant financièrement via notre page de soutien."
+      question : "Comment puis-je soutenir le podcast?",
+      answer: "Vous pouvez nous soutenir de plusieurs façons: en partageant nos épisodes sur vos réseaux sociaux et autour de vous, en laissant des commentaires et des évaluations sur les plateformes d'écoute, ou en contribuant financièrement via notre page de soutien."
     }
   ];
 
@@ -70,28 +80,52 @@ const Home = () => {
     setExpandedFaq(expandedFaq === index ? null : index);
   };
 
-  // Témoignages fictifs
+  // Témoignages des auditeurs
   const testimonials = [
     {
       id: 1,
-      name: "*",
-      role: "Musicienne",
-      quote: "Ce podcast m'a ouvert les yeux sur des aspects de l'industrie musicale que je ne connaissais pas. Chaque épisode est une mine d'or d'informations !",
-      avatar: "/images/avatars/musician.jpg" // Move to local images
+      name: "Bld14",
+      quote: "Encore un podcast incroyable ! Où on s'intéresse aussi bien à l'artiste qu'à l'humain ! Toujours aussi agréable à écouter et même à voir ! Sympa cette nouveauté!"
     },
     {
       id: 2,
-      name: "*",
-      role: "Producteur",
-      quote: "En tant que producteur, j'apprécie énormément la profondeur des analyses et la qualité des invités. C'est devenu mon rendez-vous hebdomadaire incontournable.",
-      avatar: "/images/avatars/producer.jpg" // Move to local images
+      name: "Manon",
+      quote: "Super épisode comme toujours ! Bravo pour tout ce que tu fais"
     },
     {
       id: 3,
-      name: "*",
-      role: "Étudiante en musicologie",
-      quote: "Les sujets abordés sont parfaitement en phase avec mes études. J'ai même cité ce podcast dans plusieurs de mes travaux universitaires !",
-      avatar: "/images/avatars/student.jpg" // Move to local images
+      name: "yvesjazz",
+      quote: "Très sympa votre podcast. Merci"
+    },
+    {
+      id: 4,
+      name: "kevinthiebot9017",
+      quote: "Excellente interview ! J'espère que ce podcast va continuer et grandir. Bravo pour la démarche"
+    },
+    {
+      id: 5,
+      name: "semperfidelis3681",
+      quote: "Quelle éloquence ! Très agréable à écouter et instructif. Merci"
+    },
+    {
+      id: 6,
+      name: "blacks0u_589",
+      quote: "Salut ! Super vidéo, continue comme ça !"
+    },
+    {
+      id: 7,
+      name: "manon.rbn89",
+      quote: "Super intéressant, hâte de voir le prochain épisode ! Je m'abonne"
+    },
+    {
+      id: 8,
+      name: "jeanperuta",
+      quote: "L'impro de la fin est magique et bravo pour ce nouvel épisode avec un musicien tellement inspirant"
+    },
+    {
+      id: 9,
+      name: "jeanperuta",
+      quote: "Ah oui l'épisode décoiffe"
     }
   ];
 
@@ -107,7 +141,7 @@ const Home = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
-    }, 8000);
+    }, 5000);
     return () => clearInterval(interval);
   }, [testimonials.length]);
 
@@ -180,8 +214,95 @@ const Home = () => {
 
   return (
     <div className="w-full">
-      {/* Hero Section - Amélioré */}
+      {/* Hero Section - Amélioré avec particules */}
       <section className="relative min-h-[90vh] flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-700 to-blue-500 overflow-hidden">
+        {/* Particules interactives */}
+        <Particles
+          id="tsparticles"
+          init={particlesInit}
+          className="absolute inset-0"
+          options={{
+            fpsLimit: 60,
+            fullScreen: false,
+            interactivity: false,
+            particles: {
+              color: {
+                value: "#ffffff",
+              },
+              move: {
+                enable: true,
+                speed: 0.6,
+                direction: "none",
+                random: true,
+                straight: false,
+                outModes: {
+                  default: "bounce",
+                },
+                trail: {
+                  enable: false,
+                },
+              },
+              number: {
+                density: {
+                  enable: true,
+                  area: 1000,
+                },
+                value: 15,
+                max: 25,
+                limit: 25
+              },
+              opacity: {
+                value: { min: 0.1, max: 0.4 },
+                animation: {
+                  enable: true,
+                  speed: 0.6,
+                  minimumValue: 0.1,
+                  sync: false
+                },
+              },
+              shape: {
+                type: ["character"],
+                options: {
+                  character: {
+                    value: ["♪", "♫", "♬", "♩", "𝄞"],
+                    font: "Arial",
+                    weight: "400",
+                  },
+                },
+              },
+              size: {
+                value: { min: 6, max: 10 },
+              },
+              rotate: {
+                value: { min: 0, max: 360 },
+                direction: "random",
+                animation: {
+                  enable: true,
+                  speed: 2,
+                },
+              },
+            },
+            detectRetina: true,
+            pauseOnBlur: true,
+            responsive: [
+              {
+                maxWidth: 768,
+                options: {
+                  particles: {
+                    number: {
+                      value: 10,
+                      max: 15
+                    },
+                    move: {
+                      speed: 0.5
+                    }
+                  }
+                }
+              }
+            ]
+          }}
+        />
+        
         <div className="absolute inset-0 bg-[url('/images/music-pattern.svg')] opacity-10 animate-pulse"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-blue-900/50"></div>
         
@@ -191,29 +312,41 @@ const Home = () => {
           transition={{ duration: 1 }}
           className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
         >
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-bold text-white mb-8 leading-tight"
-          >
-            MUSICAMI
-          </motion.h1>
-          
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl md:text-2xl text-blue-100 mb-12 max-w-3xl mx-auto"
-          >
-            LE podcast mensuel où des musiciens nous racontent à quel point la musique change leur quotidien 🎶 
-          </motion.p>
+          <div className="relative">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="mb-0"
+            >
+              <img 
+                src="/images/musicami-logo.webp" 
+                alt="Musicami Logo" 
+                className="w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 mx-auto rounded-xl shadow-2xl object-cover transform hover:scale-102 transition-transform duration-300"
+                width={500}
+                height={500}
+              />
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="relative -mt-12 sm:-mt-16 md:-mt-20 z-20"
+            >
+              <div className="backdrop-blur-sm py-4 px-6 rounded-xl max-w-3xl mx-auto shadow-lg">
+                <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto">
+                  LE podcast mensuel où des musiciens nous racontent à quel point la musique change leur quotidien
+                </p>
+              </div>
+            </motion.div>
+          </div>
           
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+            className="flex flex-col sm:flex-row gap-6 justify-center items-center mt-8 sm:mt-10"
           >
             <Link
               to="/episodes"
@@ -304,7 +437,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials Section - Complètement revu */}
+      {/* Testimonials Section - Carrousel automatique */}
       <section className="py-20 bg-gradient-to-br from-blue-900 to-blue-700 text-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -320,30 +453,57 @@ const Home = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={testimonial.id}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.2 }}
-                className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 relative"
-              >
-                <div className="absolute -top-4 -right-4 w-8 h-8 bg-blue-400 rounded-full opacity-50"></div>
-                <img
-                  src={testimonial.avatar}
-                  alt={testimonial.name}
-                  className="w-20 h-20 rounded-full border-4 border-white/20 mb-6"
+          <div className="relative max-w-3xl mx-auto">
+            {/* Indicateurs de navigation */}
+            <div className="flex justify-center space-x-2 mb-8">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveTestimonial(index)}
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                    activeTestimonial === index ? 'bg-white scale-125' : 'bg-white/30'
+                  }`}
+                  aria-label={`Voir le témoignage ${index + 1}`}
                 />
-                <p className="text-blue-100 mb-6 italic">"{testimonial.quote}"</p>
-                <div className="flex items-center">
+              ))}
+            </div>
+
+            {/* Carrousel */}
+            <div className="relative h-64 sm:h-52 overflow-hidden rounded-xl bg-white/10 backdrop-blur-sm">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTestimonial}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5 }}
+                  className="absolute inset-0 flex flex-col justify-center p-8 text-center"
+                >
+                  <p className="text-blue-100 mb-6 italic text-lg">"{testimonials[activeTestimonial].quote}"</p>
                   <div>
-                    <h4 className="font-semibold">{testimonial.name}</h4>
-                    <p className="text-blue-200">{testimonial.role}</p>
+                    <h4 className="font-semibold text-xl">{testimonials[activeTestimonial].name}</h4>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Boutons de navigation */}
+            <div className="flex justify-between mt-6">
+              <button
+                onClick={() => setActiveTestimonial((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))}
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                aria-label="Témoignage précédent"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => setActiveTestimonial((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))}
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                aria-label="Témoignage suivant"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
           </div>
         </div>
       </section>

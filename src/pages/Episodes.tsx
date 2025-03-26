@@ -76,49 +76,7 @@ const Episodes = () => {
   
   return (
     <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-20">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-        <div className="flex flex-1 w-full sm:w-auto gap-4">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              placeholder="Rechercher un épisode..."
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-          </div>
-          
-          <select
-            value={categoryFilter || ''}
-            onChange={(e) => setCategoryFilter(e.target.value || null)}
-            className="px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Toutes catégories</option>
-            {allCategories.map(category => (
-              <option key={category} value={category}>{category}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex gap-4">
-          <button
-            onClick={handleRefresh}
-            disabled={isLoading || isRefreshing}
-            className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Rafraîchir les épisodes"
-          >
-            <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-          </button>
-          <button
-            onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-            className="p-2 rounded-lg hover:bg-gray-100"
-            title={viewMode === 'grid' ? 'Vue liste' : 'Vue grille'}
-          >
-            {viewMode === 'grid' ? <List className="h-5 w-5" /> : <Grid className="h-5 w-5" />}
-          </button>
-        </div>
-      </div>
+      
 
       {isLoading || isRefreshing ? (
         <div className="flex justify-center py-12">

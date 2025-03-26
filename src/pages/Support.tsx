@@ -1,207 +1,160 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, DollarSign, Coffee, Gift, Award, Zap, CreditCard, Check, ArrowRight, Loader2 } from 'lucide-react';
+import { Heart, Coffee, Share, Star, MessageSquare, Headphones, BookOpen, Link as LinkIcon, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 const Support = () => {
-  const [donationAmount, setDonationAmount] = useState<number | null>(5);
-  const [customAmount, setCustomAmount] = useState('');
-  const [donorName, setDonorName] = useState('');
-  const [donorEmail, setDonorEmail] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [coffeeAmount, setCoffeeAmount] = useState<number>(3);
+  const [showCoffeeForm, setShowCoffeeForm] = useState(false);
   const [donationComplete, setDonationComplete] = useState(false);
   
-  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === '' || /^\d+(\.\d{0,2})?$/.test(value)) {
-      setCustomAmount(value);
-      setDonationAmount(null);
+  // Déplacer la définition de supportWays avant son utilisation
+  const supportWays = [
+    {
+      icon: <Headphones className="h-10 w-10 text-blue-600" />,
+      title: "Écoutez régulièrement",
+      description: "Le simple fait d'écouter chaque épisode nous aide à grandir et à améliorer notre contenu.",
+      action: "Abonnez-vous sur votre plateforme préférée"
+    },
+    {
+      icon: <Star className="h-10 w-10 text-yellow-500" />,
+      title: "Notez et commentez",
+      description: "Laissez une note 5 étoiles et un commentaire positif sur Apple Podcasts, Spotify ou YouTube.",
+      action: "Donnez votre avis"
+    },
+    {
+      icon: <Share className="h-10 w-10 text-green-600" />,
+      title: "Partagez notre contenu",
+      description: "Partagez vos épisodes préférés sur les réseaux sociaux ou avec vos amis.",
+      action: "Partager maintenant"
+    },
+    {
+      icon: <MessageSquare className="h-10 w-10 text-purple-600" />,
+      title: "Participez à la communauté",
+      description: "Rejoignez les discussions et partagez vos idées sur notre Instagram ou dans les commentaires.",
+      action: "Rejoindre la communauté"
+    },
+    {
+      icon: <BookOpen className="h-10 w-10 text-red-600" />,
+      title: "Suggérez des sujets",
+      description: "Proposez des thèmes ou des invités que vous aimeriez entendre dans nos prochains épisodes.",
+      action: "Proposer un sujet"
+    },
+    {
+      icon: <Coffee className="h-10 w-10 text-amber-700" />,
+      title: "Offrez-nous un café",
+      description: "Si vous souhaitez nous soutenir financièrement, un petit café nous fait toujours plaisir !",
+      action: "Offrir un café",
+      onClick: () => setShowCoffeeForm(true)
+    }
+  ];
+  
+  // Optimisation SEO - Ajout de métadonnées structurées
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Soutenez notre podcast Musicami",
+    "description": "Découvrez comment soutenir le podcast Musicami et nous aider à continuer à créer du contenu de qualité.",
+    "url": window.location.href,
+    "mainEntity": {
+      "@type": "ItemList",
+      "itemListElement": supportWays.map((way, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "name": way.title,
+        "description": way.description
+      }))
     }
   };
+
+  useEffect(() => {
+    // Préchargement des images pour améliorer les performances
+    const preloadImages = [
+      '/images/support-banner.jpg',
+      '/images/donation-icon.svg'
+    ];
+    
+    preloadImages.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
   
-  const handleDonationSubmit = async (e: React.FormEvent) => {
+  const handleCoffeeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const amount = donationAmount || (customAmount ? parseFloat(customAmount) : 0);
-    if (amount <= 0 || !donorEmail) return;
-    
-    setIsProcessing(true);
-    
     // Simuler un traitement de paiement
-    try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setDonationComplete(true);
-    } catch (error) {
-      console.error('Erreur de paiement:', error);
-    } finally {
-      setIsProcessing(false);
-    }
+    setDonationComplete(true);
+    // Réinitialiser après 3 secondes
+    setTimeout(() => {
+      setDonationComplete(false);
+      setShowCoffeeForm(false);
+    }, 3000);
   };
-  
-  // Liste des sponsors
-  const sponsors = [
-    { name: "Studio Harmonie", logo: "/images/sponsors/sponsor1.png", tier: "platinum" },
-    { name: "SoundWave Records", logo: "/images/sponsors/sponsor2.png", tier: "gold" },
-    { name: "MusicTech", logo: "/images/sponsors/sponsor3.png", tier: "silver" }
-  ];
-  
-  // Avantages par niveau de soutien
-  const supportTiers = [
-    {
-      name: "Fan",
-      amount: 5,
-      icon: <Coffee className="h-8 w-8 text-amber-500" />,
-      color: "amber",
-      benefits: [
-        "Accès à notre newsletter exclusive",
-        "Votre nom dans les crédits du podcast",
-        "Badge supporter sur notre Discord"
-      ]
-    },
-    {
-      name: "Supporter",
-      amount: 10,
-      icon: <Gift className="h-8 w-8 text-emerald-500" />,
-      color: "emerald",
-      benefits: [
-        "Tous les avantages Fan",
-        "Accès anticipé aux épisodes",
-        "Contenu bonus exclusif",
-        "Participation aux sondages de contenu"
-      ]
-    },
-    {
-      name: "Mécène",
-      amount: 25,
-      icon: <Award className="h-8 w-8 text-purple-500" />,
-      color: "purple",
-      benefits: [
-        "Tous les avantages Supporter",
-        "Mention spéciale en début d'épisode",
-        "Accès à notre groupe privé",
-        "Possibilité de suggérer des sujets d'épisodes",
-        "Goodies exclusifs (stickers, badges)"
-      ]
-    }
-  ];
-  
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-20">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 mt-20">
+      <Helmet>
+        <title>Soutenez Musicami - Votre podcast musical préféré</title>
+        <meta name="description" content="Découvrez comment soutenir le podcast Musicami et nous aider à continuer à créer du contenu de qualité sur la musique et les musiciens." />
+        <meta name="keywords" content="soutien podcast, faire un don podcast, aider podcast musical, Musicami support" />
+        <link rel="canonical" href={window.location.href} />
+        <meta property="og:title" content="Soutenez Musicami - Votre podcast musical préféré" />
+        <meta property="og:description" content="Votre soutien nous permet de continuer à créer du contenu de qualité sur la musique et les musiciens." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={window.location.href} />
+        <meta property="og:image" content="/images/musicami-logo.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Soutenez Musicami - Votre podcast musical préféré" />
+        <meta name="twitter:description" content="Votre soutien nous permet de continuer à créer du contenu de qualité sur la musique et les musiciens." />
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      </Helmet>
+      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="text-center mb-12"
+        transition={{ duration: 0.5 }}
+        className="text-center mb-16"
       >
         <Heart className="h-16 w-16 text-red-500 mx-auto mb-6" />
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Soutenez MusicAmi</h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">Soutenez notre podcast</h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Votre soutien nous permet de continuer à créer du contenu de qualité et de rester indépendants
+          Votre soutien nous permet de continuer à créer du contenu de qualité. 
+          Il existe de nombreuses façons de nous aider, même sans dépenser un centime !
         </p>
       </motion.div>
 
-      {/* Section des remerciements */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-        className="mb-16"
-      >
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8 text-center shadow-sm border border-blue-100">
-          <Heart className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Merci à nos auditeurs</h2>
-          <p className="text-gray-600 max-w-3xl mx-auto">
-            Nous tenons à remercier chaleureusement tous nos auditeurs fidèles qui nous suivent chaque semaine. 
-            Votre soutien et vos retours nous permettent de continuer à créer du contenu qui vous passionne.
-          </p>
-        </div>
-      </motion.section>
-
-      {/* Section des sponsors actuels */}
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.4 }}
-        className="mb-16"
-      >
-        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Nos sponsors</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {sponsors.map((sponsor, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
-              className={`bg-white rounded-xl shadow-md p-6 text-center border-t-4 ${
-                sponsor.tier === 'platinum' ? 'border-blue-500' : 
-                sponsor.tier === 'gold' ? 'border-amber-500' : 'border-gray-400'
-              }`}
-            >
-              <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                <img 
-                  src={sponsor.logo} 
-                  alt={sponsor.name} 
-                  className="w-16 h-16 object-contain"
-                  onError={(e) => {
-                    e.currentTarget.src = '/images/placeholder-logo.png';
-                  }}
-                />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-1">{sponsor.name}</h3>
-              <p className={`text-sm font-medium ${
-                sponsor.tier === 'platinum' ? 'text-blue-600' : 
-                sponsor.tier === 'gold' ? 'text-amber-600' : 'text-gray-500'
-              }`}>
-                {sponsor.tier === 'platinum' ? 'Sponsor Platinum' : 
-                 sponsor.tier === 'gold' ? 'Sponsor Gold' : 'Sponsor Silver'}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* Section des niveaux de soutien */}
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.6 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
         className="mb-20"
       >
-        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Niveaux de soutien</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Comment nous soutenir ?</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {supportTiers.map((tier, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {supportWays.map((way, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 + index * 0.2 }}
-              className="bg-white rounded-xl shadow-md overflow-hidden border hover:shadow-lg transition-shadow duration-300"
+              transition={{ duration: 0.5, delay: 0.1 * index }}
+              className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow duration-300"
             >
-              <div className={`bg-${tier.color}-50 p-6 text-center`}>
-                {tier.icon}
-                <h3 className="text-2xl font-bold text-gray-900 mt-4">{tier.name}</h3>
-                <div className="text-3xl font-bold mt-2 mb-2">
-                  {tier.amount}€ <span className="text-sm font-normal text-gray-600">/ mois</span>
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-4 p-3 bg-gray-50 rounded-full">
+                  {way.icon}
                 </div>
-              </div>
-              
-              <div className="p-6">
-                <ul className="space-y-3">
-                  {tier.benefits.map((benefit, i) => (
-                    <li key={i} className="flex items-start">
-                      <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-                
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{way.title}</h3>
+                <p className="text-gray-600 mb-4">{way.description}</p>
                 <button 
-                  onClick={() => setDonationAmount(tier.amount)}
-                  className="mt-6 w-full py-3 rounded-lg font-medium transition-colors duration-300 bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={way.onClick || (() => {})}
+                  className="mt-auto text-blue-600 font-medium hover:text-blue-800 flex items-center"
                 >
-                  Choisir ce niveau
+                  {way.action}
+                  <ArrowRight className="ml-1 h-4 w-4" />
                 </button>
               </div>
             </motion.div>
@@ -209,184 +162,144 @@ const Support = () => {
         </div>
       </motion.section>
 
-      {/* Section de don */}
+      {/* Section d'impact */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 mb-20"
+      >
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Ce que votre soutien nous permet de faire</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white rounded-lg p-5 shadow-sm">
+              <h3 className="font-semibold text-lg mb-2">Améliorer la qualité</h3>
+              <p className="text-gray-600">Investir dans du meilleur matériel audio et vidéo pour une expérience optimale.</p>
+            </div>
+            <div className="bg-white rounded-lg p-5 shadow-sm">
+              <h3 className="font-semibold text-lg mb-2">Créer plus de contenu</h3>
+              <p className="text-gray-600">Augmenter la fréquence de nos épisodes et explorer de nouveaux formats.</p>
+            </div>
+            <div className="bg-white rounded-lg p-5 shadow-sm">
+              <h3 className="font-semibold text-lg mb-2">Inviter des experts</h3>
+              <p className="text-gray-600">Faire venir des invités spéciaux pour enrichir nos discussions.</p>
+            </div>
+          </div>
+          
+          <p className="text-center text-gray-600 italic">
+            "Chaque partage, chaque commentaire, chaque écoute compte pour nous. Merci de faire partie de cette aventure !"
+          </p>
+        </div>
+      </motion.section>
+
+      {/* Formulaire de café */}
+      {showCoffeeForm && !donationComplete && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        >
+          <div className="bg-white rounded-xl p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold mb-4 text-center">Offrez-nous un café</h3>
+            <div className="flex justify-center mb-6">
+              <Coffee className="h-12 w-12 text-amber-700" />
+            </div>
+            
+            <form onSubmit={handleCoffeeSubmit}>
+              <div className="mb-6">
+                <label className="block text-gray-700 mb-2">Combien de cafés ?</label>
+                <div className="flex justify-between gap-4">
+                  {[1, 3, 5].map(amount => (
+                    <button
+                      key={amount}
+                      type="button"
+                      onClick={() => setCoffeeAmount(amount)}
+                      className={`flex-1 py-3 rounded-lg border ${
+                        coffeeAmount === amount 
+                          ? 'bg-amber-100 border-amber-500 text-amber-800' 
+                          : 'border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      {amount} {amount === 1 ? 'café' : 'cafés'}
+                      <div className="text-sm text-gray-600">{(amount * 3).toFixed(2)}€</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => setShowCoffeeForm(false)}
+                  className="flex-1 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700"
+                >
+                  Offrir {coffeeAmount} {coffeeAmount === 1 ? 'café' : 'cafés'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Confirmation de don */}
+      {donationComplete && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        >
+          <div className="bg-white rounded-xl p-6 max-w-md w-full text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Heart className="h-8 w-8 text-green-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">Merci pour votre soutien !</h3>
+            <p className="text-gray-600 mb-6">
+              Votre café nous aide à continuer à créer du contenu que vous aimez.
+            </p>
+            <button
+              onClick={() => {
+                setDonationComplete(false);
+                setShowCoffeeForm(false);
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Fermer
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      
+
+      {/* Section de partenariat */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.8 }}
-        className="mb-20"
-      >
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl overflow-hidden shadow-lg">
-          <div className="grid grid-cols-1 lg:grid-cols-2">
-            <div className="p-8 lg:p-12 text-white">
-              <h2 className="text-3xl font-bold mb-6">Faire un don</h2>
-              <p className="text-blue-100 mb-8">
-                Votre soutien financier nous aide à améliorer la qualité de nos épisodes, 
-                à investir dans du meilleur équipement et à développer de nouveaux formats.
-              </p>
-              
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <DollarSign className="h-6 w-6 text-blue-200 mr-3" />
-                  <span className="text-blue-100">100% des dons sont investis dans le podcast</span>
-                </div>
-                <div className="flex items-center">
-                  <Zap className="h-6 w-6 text-blue-200 mr-3" />
-                  <span className="text-blue-100">Paiement sécurisé et transparent</span>
-                </div>
-                <div className="flex items-center">
-                  <Award className="h-6 w-6 text-blue-200 mr-3" />
-                  <span className="text-blue-100">Remerciement personnalisé dans notre prochain épisode</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white p-8 lg:p-12">
-              {donationComplete ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="text-center py-8"
-                >
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Check className="h-8 w-8 text-green-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Merci pour votre soutien !</h3>
-                  <p className="text-gray-600 mb-8">
-                    Votre don nous aide à continuer notre mission de partager notre passion pour la musique.
-                  </p>
-                  <button
-                    onClick={() => setDonationComplete(false)}
-                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-300"
-                  >
-                    Faire un autre don
-                  </button>
-                </motion.div>
-              ) : (
-                <form onSubmit={handleDonationSubmit} className="space-y-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-6">Choisissez un montant</h3>
-                  
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    {[5, 10, 25].map(amount => (
-                      <button
-                        key={amount}
-                        type="button"
-                        onClick={() => {
-                          setDonationAmount(amount);
-                          setCustomAmount('');
-                        }}
-                        className={`py-3 rounded-lg font-medium transition-colors duration-300 ${
-                          donationAmount === amount 
-                            ? 'bg-blue-600 text-white' 
-                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                        }`}
-                      >
-                        {amount}€
-                      </button>
-                    ))}
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="customAmount" className="block text-sm font-medium text-gray-700 mb-2">
-                      Montant personnalisé
-                    </label>
-                    <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">€</span>
-                      <input
-                        type="text"
-                        id="customAmount"
-                        value={customAmount}
-                        onChange={handleCustomAmountChange}
-                        placeholder="Autre montant"
-                        className={`w-full pl-8 pr-4 py-3 rounded-lg border ${
-                          donationAmount === null && customAmount 
-                            ? 'border-blue-300 ring-2 ring-blue-100' 
-                            : 'border-gray-300'
-                        } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="donorName" className="block text-sm font-medium text-gray-700 mb-2">
-                      Votre nom (optionnel)
-                    </label>
-                    <input
-                      type="text"
-                      id="donorName"
-                      value={donorName}
-                      onChange={(e) => setDonorName(e.target.value)}
-                      placeholder="Comment souhaitez-vous être mentionné ?"
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="donorEmail" className="block text-sm font-medium text-gray-700 mb-2">
-                      Votre email <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      id="donorEmail"
-                      value={donorEmail}
-                      onChange={(e) => setDonorEmail(e.target.value)}
-                      placeholder="Pour vous envoyer un reçu"
-                      required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                  
-                  <button
-                    type="submit"
-                    disabled={isProcessing || (!donationAmount && !customAmount) || !donorEmail}
-                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <Loader2 className="animate-spin h-5 w-5 mr-2" />
-                        Traitement en cours...
-                      </>
-                    ) : (
-                      <>
-                        <CreditCard className="h-5 w-5 mr-2" />
-                        Faire un don {donationAmount || (customAmount && parseFloat(customAmount) > 0) ? `de ${donationAmount || customAmount}€` : ''}
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* Section de contact pour le sponsoring */}
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 1 }}
         className="bg-gray-50 rounded-xl p-8 shadow-sm border border-gray-200"
       >
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Devenir sponsor</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Vous représentez une marque ?</h2>
           <p className="text-gray-600 mb-8 text-center">
-            Vous souhaitez associer votre marque à notre podcast et toucher notre audience engagée ?
-            Découvrez nos offres de partenariat adaptées à tous les budgets.
+            Si vous souhaitez collaborer avec notre podcast pour toucher notre audience engagée,
+            nous serions ravis d'en discuter.
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center gap-6">
-            <a 
-              href="/assets/MusicAmi-MediaKit.pdf" 
-              target="_blank"
-              className="inline-flex items-center justify-center px-6 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-300"
-            >
-              Télécharger notre média kit
-            </a>
             <Link 
-              to="/contact?subject=Sponsoring" 
+              to="/contact?subject=Partenariat" 
               className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
             >
-              Nous contacter pour un partenariat
+              Discuter d'un partenariat
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </div>

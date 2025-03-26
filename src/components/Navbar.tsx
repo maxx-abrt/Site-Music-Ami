@@ -50,9 +50,15 @@ const Navbar = () => {
       {/* Spacer pour compenser la hauteur de la navbar fixe */}
       <div className={`h-${isScrolled ? '16' : '20'} transition-all duration-300`}></div>
       
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md py-2' : 'bg-white/95 backdrop-blur-sm py-3'
-      }`}>
+      <nav 
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 
+          ${isScrolled 
+            ? 'bg-white shadow-md py-2 border-b border-blue-100' 
+            : 'bg-white/95 backdrop-blur-sm py-3 border-b border-blue-50/50'
+          }`}
+      >
+       
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             {/* Logo et nom du site */}
@@ -118,23 +124,13 @@ const Navbar = () => {
             {/* Bouton menu mobile */}
             <div className="md:hidden flex items-center">
               <button
-                onClick={() => setSearchOpen(!searchOpen)}
-                className="p-2 rounded-full text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200 mr-1"
-                aria-label="Rechercher"
-              >
-                <Search className="h-5 w-5" />
-              </button>
-              
-              <button
                 onClick={toggleMenu}
-                className="p-2 rounded-md text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200"
+                className="flex flex-col justify-center items-center p-2 rounded-md"
                 aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
               >
-                {isMenuOpen ? (
-                  <X className="h-6 w-6" />
-                ) : (
-                  <Menu className="h-6 w-6" />
-                )}
+                <div className={`h-1 w-8 bg-blue-600 mb-1 transition-all duration-300 ${isMenuOpen ? 'transform rotate-45' : ''}`}></div>
+                <div className={`h-1 w-8 bg-white mb-1 transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`}></div>
+                <div className={`h-1 w-8 bg-red-600 transition-all duration-300 ${isMenuOpen ? 'transform -rotate-45' : ''}`}></div>
               </button>
             </div>
           </div>

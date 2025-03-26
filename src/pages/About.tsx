@@ -11,7 +11,7 @@ const About = () => {
         transition={{ duration: 0.8 }}
         className="text-center mb-12"
       >
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">À propos de MusicAmi</h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">Qui sommes-nous ?</h1>
         <p className="text-xl text-gray-600">Votre fenêtre sur l'univers musical</p>
       </motion.div>
 
@@ -22,7 +22,7 @@ const About = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <img
-            src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+            src="images/Photo-about1-Camille.jpeg"
             alt="Studio d'enregistrement"
             className="rounded-lg shadow-lg"
           />
@@ -34,24 +34,11 @@ const About = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="flex flex-col justify-center"
         >
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Notre Mission</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Notre histoire</h2>
           <p className="text-gray-600 mb-6">
-            MusicAmi est né d'une passion profonde pour la musique et d'un désir de partager des connaissances approfondies sur cet art universel. Chaque semaine, nous explorons différents aspects de la musique, des dernières tendances aux classiques intemporels.
+            Musicami est né d'une passion profonde pour la musique et d'un désir de partager des connaissances approfondies sur cet art universel. Chaque semaine, nous explorons différents aspects de la musique, des dernières tendances aux classiques intemporels.
           </p>
-          <div className="grid grid-cols-1 gap-4">
-            <div className="flex items-center">
-              <Music2 className="h-6 w-6 text-blue-500 mr-3" />
-              <span className="text-gray-700">Exploration musicale</span>
-            </div>
-            <div className="flex items-center">
-              <Mic className="h-6 w-6 text-blue-500 mr-3" />
-              <span className="text-gray-700">Interviews exclusives</span>
-            </div>
-            <div className="flex items-center">
-              <Heart className="h-6 w-6 text-blue-500 mr-3" />
-              <span className="text-gray-700">Communauté passionnée</span>
-            </div>
-          </div>
+          
         </motion.div>
       </div>
 
@@ -65,30 +52,30 @@ const About = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="text-center">
             <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80"
-              alt="Thomas Martin"
+              src="images/1.webp"
+              alt="Camille"
               className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
             />
-            <h3 className="font-semibold text-gray-900">Thomas Martin</h3>
-            <p className="text-gray-600">Animateur principal</p>
+            <h3 className="font-semibold text-gray-900">Camille</h3>
+            <p className="text-gray-600">Production, Animation, Montage</p>
           </div>
           <div className="text-center">
             <img
-              src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80"
-              alt="Sophie Dubois"
+              src="images/2.webp"
+              alt="Jean"
               className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
             />
-            <h3 className="font-semibold text-gray-900">Sophie Dubois</h3>
-            <p className="text-gray-600">Productrice</p>
+            <h3 className="font-semibold text-gray-900">Jean</h3>
+            <p className="text-gray-600">Responsable technique</p>
           </div>
           <div className="text-center">
             <img
-              src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80"
-              alt="Marc Laurent"
+              src="images/3.webp"
+              alt="Gabriel"
               className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
             />
-            <h3 className="font-semibold text-gray-900">Marc Laurent</h3>
-            <p className="text-gray-600">Ingénieur son</p>
+            <h3 className="font-semibold text-gray-900">Gabriel</h3>
+            <p className="text-gray-600">Responsable finances</p>
           </div>
         </div>
       </motion.div>

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, MapPin, Phone, Send, MessageSquare, Clock, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,10 @@ const Contact = () => {
   
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
+  }, []);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -47,15 +52,31 @@ const Contact = () => {
     
     setFormStatus('submitting');
     
-    // Simuler un envoi de formulaire
+    // Préparation des données pour l'email
+    const templateParams = {
+      from_name: formData.nom,
+      from_email: formData.email,
+      subject: formData.sujet,
+      message: formData.message,
+      to_email: 'contact@musicamipodcast.fr'
+    };
+    
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Envoi de l'email via EmailJS
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        templateParams,
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      );
+      
       setFormStatus('success');
       setFormData({ nom: '', email: '', sujet: '', message: '' });
       
       // Réinitialiser après 5 secondes
       setTimeout(() => setFormStatus('idle'), 5000);
     } catch (error) {
+      console.error('Erreur lors de l\'envoi de l\'email:', error);
       setFormStatus('error');
     }
   };
@@ -70,7 +91,7 @@ const Contact = () => {
         className="text-center mb-16"
       >
         <Mail className="h-16 w-16 text-blue-600 mx-auto mb-6" />
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Contactez-nous</h1>
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Nous contacter</h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
           Une question, une suggestion ou une proposition de collaboration ? 
           N'hésitez pas à nous contacter, nous vous répondrons dans les plus brefs délais.
@@ -86,33 +107,19 @@ const Contact = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="lg:col-span-2 space-y-8"
         >
-          {/* Carte stylisée */}
-          <div className="bg-white rounded-xl shadow-md overflow-hidden h-64 md:h-80">
-            <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.9916256937604!2d2.292292615509614!3d48.85837007928746!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e2964e34e2d%3A0x8ddca9ee380ef7e0!2sTour%20Eiffel!5e0!3m2!1sfr!2sfr!4v1651245814279!5m2!1sfr!2sfr" 
-              className="w-full h-full border-0" 
-              loading="lazy"
-              title="Carte de localisation"
-            ></iframe>
-          </div>
+          
           
           {/* Informations de contact */}
           <div className="bg-white rounded-xl shadow-md p-8 space-y-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-6">Nos coordonnées</h3>
             
-            <div className="flex items-start space-x-4">
-              <MapPin className="h-6 w-6 text-blue-600 mt-1 flex-shrink-0" />
-              <div>
-                <h4 className="font-medium text-gray-900">Adresse</h4>
-                <p className="text-gray-600">123 Avenue de la Musique<br />75001 Paris, France</p>
-              </div>
-            </div>
+      
             
             <div className="flex items-start space-x-4">
               <Mail className="h-6 w-6 text-blue-600 mt-1 flex-shrink-0" />
               <div>
                 <h4 className="font-medium text-gray-900">Email</h4>
-                <p className="text-gray-600">contact@musicami.fr</p>
+                <p className="text-gray-600">contact@musicamipodcast.fr</p>
               </div>
             </div>
             
@@ -124,13 +131,7 @@ const Contact = () => {
               </div>
             </div>
             
-            <div className="flex items-start space-x-4">
-              <Clock className="h-6 w-6 text-blue-600 mt-1 flex-shrink-0" />
-              <div>
-                <h4 className="font-medium text-gray-900">Horaires</h4>
-                <p className="text-gray-600">Lundi - Vendredi: 9h - 18h</p>
-              </div>
-            </div>
+            
           </div>
         </motion.div>
         
@@ -142,7 +143,7 @@ const Contact = () => {
           className="lg:col-span-3"
         >
           <div className="bg-white rounded-xl shadow-md p-8">
-            <h3 className="text-xl font-semibold text-gray-900 mb-6">Envoyez-nous un message</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-6">Nous envoyer un message</h3>
             
             {formStatus === 'success' ? (
               <motion.div 
