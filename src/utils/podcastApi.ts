@@ -7,8 +7,9 @@ const API_SECRET = 'qyCVd5v$Pz3Z^5bWHWq#ytMkNcn6$K8hpSK5ywb8';
 const BASE_URL = 'https://api.podcastindex.org/api/1.0';
 
 // Configuration de l'API YouTube
-const YOUTUBE_API_KEY = 'AIzaSyDEoB1csom4eZHGETpMkDSyzgoIsG0rx6U';
-const CHANNEL_ID = 'UCNZWO9kWm76mntaa8s7rJkQ'; // Replace with the actual channel ID
+const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
+const CHANNEL_ID = import.meta.env.VITE_CHANNEL_ID; // Replace with the actual channel ID
+
 
 // Interface pour les podcasts
 export interface Podcast {

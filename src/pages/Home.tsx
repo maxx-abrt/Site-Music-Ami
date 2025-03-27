@@ -99,32 +99,32 @@ const Home = () => {
     },
     {
       id: 4,
-      name: "kevinthiebot9017",
+      name: "kevinthiebot",
       quote: "Excellente interview ! J'espère que ce podcast va continuer et grandir. Bravo pour la démarche"
     },
     {
       id: 5,
-      name: "semperfidelis3681",
+      name: "semperfidelis",
       quote: "Quelle éloquence ! Très agréable à écouter et instructif. Merci"
     },
     {
       id: 6,
-      name: "blacks0u_589",
+      name: "blacks0u",
       quote: "Salut ! Super vidéo, continue comme ça !"
     },
     {
       id: 7,
-      name: "manon.rbn89",
+      name: "manon",
       quote: "Super intéressant, hâte de voir le prochain épisode ! Je m'abonne"
     },
     {
       id: 8,
-      name: "jeanperuta",
+      name: "jean",
       quote: "L'impro de la fin est magique et bravo pour ce nouvel épisode avec un musicien tellement inspirant"
     },
     {
       id: 9,
-      name: "jeanperuta",
+      name: "jean",
       quote: "Ah oui l'épisode décoiffe"
     }
   ];
@@ -214,6 +214,9 @@ const Home = () => {
 
   return (
     <div className="w-full">
+      {/* Add a small border at the top */}
+      <div className="border-t border-gray-200"></div>
+
       {/* Hero Section - Amélioré avec particules */}
       <section className="relative min-h-[90vh] flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-700 to-blue-500 overflow-hidden">
         {/* Particules interactives */}
@@ -334,9 +337,9 @@ const Home = () => {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="relative -mt-12 sm:-mt-16 md:-mt-20 z-20"
             >
-              <div className="backdrop-blur-sm py-4 px-6 rounded-xl max-w-3xl mx-auto shadow-lg">
+              <div className="bg-gradient-to-br from-blue-600 to-blue-800 backdrop-blur-sm py-4 px-6 rounded-xl max-w-3xl mx-auto shadow-lg">
                 <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto">
-                  LE podcast mensuel où des musiciens nous racontent à quel point la musique change leur quotidien
+                  Le podcast mensuel où des musiciens nous racontent à quel point la musique change leur quotidien
                 </p>
               </div>
             </motion.div>
@@ -446,11 +449,9 @@ const Home = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl font-bold mb-4"
             >
-              Ce que disent nos auditeurs
+              Ce que disent nos auditeurs...
             </motion.h2>
-            <p className="text-xl text-blue-100">
-              Découvrez les retours de notre communauté passionnée
-            </p>
+            
           </div>
 
           <div className="relative max-w-3xl mx-auto">
