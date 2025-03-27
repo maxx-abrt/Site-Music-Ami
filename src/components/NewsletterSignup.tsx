@@ -26,7 +26,7 @@ const NewsletterSignup = () => {
 
   return (
     <div className="bg-white rounded-lg p-6 shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Restez informé</h2>
+      <h2 className="text-2xl font-bold mb-4">On reste en lien ?</h2>
       <p className="text-gray-600 mb-4">
         Abonnez-vous à notre newsletter pour être informé des nouveaux épisodes et des événements à venir.
       </p>

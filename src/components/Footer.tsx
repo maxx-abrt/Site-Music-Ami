@@ -84,7 +84,7 @@ const Footer = () => {
                 Contact
               </Link>
               <Link to="/support" className="text-gray-600 hover:text-blue-600 transition-colors hover:underline decoration-blue-400 underline-offset-4">
-                Soutenir
+                Nous Soutenir
               </Link>
             </div>
           </div>

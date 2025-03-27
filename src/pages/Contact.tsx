@@ -18,7 +18,7 @@ const Contact = () => {
     // Scroll to the top of the page when the component mounts
     window.scrollTo(0, 0);
   }, []);
-  
+
   useEffect(() => {
     emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
   }, []);
@@ -301,7 +301,7 @@ const Contact = () => {
         transition={{ duration: 0.8, delay: 0.8 }}
         className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-10 text-white text-center"
       >
-        <h2 className="text-2xl font-bold mb-4">Restez informé</h2>
+        <h2 className="text-2xl font-bold mb-4">On reste en lien ?</h2>
         <p className="text-blue-100 mb-8 max-w-2xl mx-auto">
           Abonnez-vous à notre newsletter pour être informé des nouveaux épisodes et des événements à venir.
         </p>
