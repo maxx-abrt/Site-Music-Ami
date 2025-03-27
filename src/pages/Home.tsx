@@ -178,7 +178,7 @@ const Home = () => {
   const NewsletterSection = () => (
     <div className="text-center">
       <h2 className="text-3xl font-bold text-gray-900 mb-6">
-        Restez connecté
+        On reste en lien ?
       </h2>
       <p className="text-xl text-gray-600 mb-8">
         Recevez nos dernières actualités et nos meilleurs contenus directement dans votre boîte mail.
