@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, Calendar, Clock, User, ChevronDown, ChevronUp, Volume2, ExternalLink } from 'lucide-react';
 import { YouTubeVideo, PodcastEpisode } from '../utils/podcastApi';
+import { useNavigate } from 'react-router-dom';
 
 interface EpisodeCardProps {
   video?: YouTubeVideo;
@@ -26,6 +27,8 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
   className = '',
   onImageError,
 }) => {
+  const navigate = useNavigate();
+
   // Utiliser soit video, soit episode
   const data = video || episode;
   
@@ -87,7 +90,10 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
             }`}
             onError={onImageError}
           />
-          <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-md">
+          <div 
+            className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-md cursor-pointer"
+            onClick={() => video && navigate(`/video/${video.id}`)}
+          >
             <span className="bg-blue-600 text-white py-2 px-4 rounded-full flex items-center gap-2 font-medium">
               <ExternalLink className="h-4 w-4" />
               Regarder la vidéo

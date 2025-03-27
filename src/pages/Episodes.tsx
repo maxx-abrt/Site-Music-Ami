@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, RefreshCw, AlertTriangle, Filter, Grid, List } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import EpisodeCard from '../components/EpisodeCard';
@@ -15,7 +15,10 @@ const Episodes = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   
   const queryClient = useQueryClient();
-  
+  useEffect(() => {
+    // Scroll to the top of the page when the component mounts
+    window.scrollTo(0, 0);
+  }, []);
   // Récupérer toutes les vidéos sans limite
   const { data: videos, isLoading, error, refetch } = useYouTubeVideos();
   

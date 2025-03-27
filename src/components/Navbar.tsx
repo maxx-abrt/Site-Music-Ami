@@ -117,7 +117,7 @@ const Navbar = () => {
                 to="/support"
                 className="ml-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200"
               >
-                Soutenir
+                Nous Soutenir
               </Link>
             </div>
             
@@ -214,16 +214,9 @@ const Navbar = () => {
                     className={`block px-3 py-2 rounded-md text-base ${location.pathname === '/support' ? 'text-blue-600 bg-blue-50 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'} transition-colors duration-200`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Soutenir
+                    Nous Soutenir
                   </Link>
-                  <Link
-                    to="/favorites"
-                    className={`block px-3 py-2 rounded-md text-base ${location.pathname === '/favorites' ? 'text-blue-600 bg-blue-50 font-medium' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'} transition-colors duration-200 flex items-center`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <Heart className="h-4 w-4 mr-2" />
-                    Favoris
-                  </Link>
+                  
                 </div>
               </div>
             </motion.div>

@@ -9,6 +9,11 @@ const Support = () => {
   const [showCoffeeForm, setShowCoffeeForm] = useState(false);
   const [donationComplete, setDonationComplete] = useState(false);
   
+  useEffect(() => {
+    // Scroll to the top of the page when the component mounts
+    window.scrollTo(0, 0);
+  }, []);
+  
   // Déplacer la définition de supportWays avant son utilisation
   const supportWays = [
     {
@@ -46,7 +51,7 @@ const Support = () => {
       title: "Offrez-nous un café",
       description: "Si vous souhaitez nous soutenir financièrement, un petit café nous fait toujours plaisir !",
       action: "Offrir un café",
-      onClick: () => setShowCoffeeForm(true)
+      onClick: () => window.open('https://www.buymeacoffee.com/musicamipodcast', '_blank')
     }
   ];
   
@@ -92,11 +97,32 @@ const Support = () => {
     }, 3000);
   };
 
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = "https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js";
+    script.setAttribute('data-name', 'bmc-button');
+    script.setAttribute('data-slug', 'musicamipodcast');
+    script.setAttribute('data-color', '#FFDD00');
+    script.setAttribute('data-emoji', '');
+    script.setAttribute('data-font', 'Cookie');
+    script.setAttribute('data-text', 'Buy me a coffee');
+    script.setAttribute('data-outline-color', '#000000');
+    script.setAttribute('data-font-color', '#000000');
+    script.setAttribute('data-coffee-color', '#ffffff');
+    script.async = true;
+
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 mt-20">
       <Helmet>
         <title>Soutenez Musicami - Votre podcast musical préféré</title>
-        <meta name="description" content="Découvrez comment soutenir le podcast Musicami et nous aider à continuer à créer du contenu de qualité sur la musique et les musiciens." />
+        <meta name="description" content="Découvrez comment soutenir le podcast Musicami et nous aider à continuer à créer du contenu de qualité." />
         <meta name="keywords" content="soutien podcast, faire un don podcast, aider podcast musical, Musicami support" />
         <link rel="canonical" href={window.location.href} />
         <meta property="og:title" content="Soutenez Musicami - Votre podcast musical préféré" />
@@ -278,7 +304,18 @@ const Support = () => {
         </motion.div>
       )}
 
-      
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Soutenez-nous avec un café !</h2>
+        <div className="flex justify-center">
+          <a href="https://www.buymeacoffee.com/musicamipodcast" target="_blank">
+            <img 
+              src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" 
+              alt="Offrez nous un caffé !" 
+              style={{ height: '60px', width: '217px' }} 
+            />
+          </a>
+        </div>
+      </div>
 
       {/* Section de partenariat */}
       <motion.section
