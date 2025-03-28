@@ -86,6 +86,16 @@ const Footer = () => {
               <Link to="/support" className="text-gray-600 hover:text-blue-600 transition-colors hover:underline decoration-blue-400 underline-offset-4">
                 Nous Soutenir
               </Link>
+              <Link to="/MentionLegales" className="text-gray-600 hover:text-blue-600 transition-colors hover:underline decoration-blue-400 underline-offset-4">
+                Mentions légales
+              </Link>
+              <Link to="/CGV" className="text-gray-600 hover:text-blue-600 transition-colors hover:underline decoration-blue-400 underline-offset-4">
+                Conditions Générales de Vente
+              </Link>
+              <Link to="/Confidentialité" className="text-gray-600 hover:text-blue-600 transition-colors hover:underline decoration-blue-400 underline-offset-4">
+                Confidentialité
+              </Link>
+              
             </div>
           </div>
         </div>
@@ -93,10 +103,24 @@ const Footer = () => {
         {/* Footer divider */}
         <div className="h-px w-full bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
         
+        {/* MaxxAbrt*/}
+        <div className="text-center text-sm text-gray-500 mt-6">
+          Développé avec ❤️ par
+        <a
+            href="https://www.instagram.com/maxx.abrt/"
+            className="hover:text-blue-600 transition-colors text-blue-400"
+          >
+            ‎ maxx.abrt
+          </a>
+        </div>
+
         {/* Copyright */}
         <div className="text-center text-sm text-gray-500 mt-6">
           &copy; {new Date().getFullYear()} Musicami. Tous droits réservés.
         </div>
+
+
+        
       </div>
     </footer>
   );

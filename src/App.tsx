@@ -10,6 +10,11 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Support from './pages/Support';
 import VideoDetail from './pages/VideoDetail';
+
+import CGV from './pages/CGV';
+import Confidentialité from './pages/Confidentialité';
+import MentionLegales from './pages/MentionLegales';
+
 import ErrorBoundary from './components/ErrorBoundary';
 import { register as registerServiceWorker } from './serviceWorker';
 import reportWebVitals from './utils/webVitals';
@@ -71,6 +76,9 @@ function App() {
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/support" element={<Support />} />
                   <Route path="/video/:videoId" element={<VideoDetail />} />
+                  <Route path="/CGV" element={<CGV />} />
+                  <Route path="/Confidentialité" element={<Confidentialité />} />
+                  <Route path="/MentionLegales" element={<MentionLegales />} />
                 </Routes>
               </main>
               <Footer />
